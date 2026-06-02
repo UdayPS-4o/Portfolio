@@ -17,7 +17,8 @@ function Name() {
   );
 }
 
-/* Hero — variation 08 "Glitch": RGB-split name tearing over a particle tunnel. */
+/* Hero — variation 08 "Glitch": RGB-split name tearing over a particle tunnel.
+   Vertically centered, left-aligned stack (matches the /gsap-variation sample). */
 export default function Hero() {
   const root = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -44,7 +45,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section ref={root} id="hero" className="relative h-[100svh] min-h-[640px] overflow-hidden">
+    <section ref={root} id="hero" className="relative h-[100svh] min-h-[600px] overflow-hidden">
       <ThreeScene mode="tunnel" className="pointer-events-none absolute inset-0 z-0 h-full w-full" />
 
       {/* scanlines */}
@@ -53,8 +54,9 @@ export default function Hero() {
         style={{ backgroundImage: "repeating-linear-gradient(0deg, #fff 0 1px, transparent 1px 4px)" }}
       />
 
-      <div className="pointer-events-none relative z-[2] flex h-full flex-col justify-end gap-6 pad-x pb-[clamp(2rem,6vh,5rem)]">
-        <div className="gl-fade flex flex-wrap items-center gap-[.8rem] font-display text-[clamp(.7rem,1.4vw,.9rem)] uppercase tracking-[.25em] text-muted">
+      {/* vertically centered, left-aligned stack */}
+      <div className="pointer-events-none relative z-[2] flex h-full flex-col justify-center gap-5 pad-x sm:gap-6">
+        <div className="gl-fade flex flex-wrap items-center gap-[.7rem] font-display text-[clamp(.62rem,1.4vw,.9rem)] uppercase tracking-[.2em] text-muted sm:gap-[.8rem] sm:tracking-[.25em]">
           <span>Full-Stack</span>
           <i className="not-italic text-accent">·</i>
           <span>RPA &amp; Automation</span>
@@ -62,7 +64,7 @@ export default function Hero() {
           <span>Reverse Engineering</span>
         </div>
 
-        <div className="relative font-display text-[clamp(2.8rem,11vw,11rem)] font-bold leading-[.86] tracking-[-.03em]">
+        <div className="relative font-display text-[clamp(2.6rem,11vw,11rem)] font-bold leading-[1.0] tracking-[-.03em] sm:leading-[.95]">
           <h1 className="gl-line relative z-10">
             <Name />
           </h1>
@@ -74,12 +76,12 @@ export default function Hero() {
           </h1>
         </div>
 
-        <div className="mt-2 flex flex-wrap items-end justify-between gap-8">
-          <p className="gl-fade pointer-events-auto max-w-[42ch] text-[clamp(.95rem,1.4vw,1.1rem)] text-muted">
+        <div className="mt-1 flex max-w-[44ch] flex-col gap-5 sm:gap-6">
+          <p className="gl-fade pointer-events-auto text-[clamp(.9rem,1.4vw,1.1rem)] leading-[1.55] text-muted">
             I build production features and ruthless automation: LLM-powered products, agentic workflows, and tools
             that thrive where the documentation runs out.
           </p>
-          <div className="gl-fade pointer-events-auto flex gap-8 font-display text-[.85rem] tracking-[.05em]">
+          <div className="gl-fade pointer-events-auto flex gap-8 font-display text-[.82rem] tracking-[.05em]">
             <span>Indore, India</span>
             <span id="clock" className="text-accent">—</span>
           </div>
