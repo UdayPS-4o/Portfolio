@@ -3,11 +3,12 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import ThreeScene from "./ThreeScene";
+import Hero3D from "./Hero3D";
 
 const NAME_FIRST = "Uday Pratap";
 const NAME_LAST = "Singh Parihar";
 
-function Name() {
+function GlitchName() {
   return (
     <>
       {NAME_FIRST}
@@ -17,12 +18,14 @@ function Name() {
   );
 }
 
-/* Hero — variation 08 "Glitch": RGB-split name tearing over a particle tunnel.
-   Vertically centered, left-aligned stack (matches the /gsap-variation sample). */
+/* Hero — desktop: V08 "Glitch" RGB-split over particle tunnel (vertically centered).
+   Mobile:  original bottom-anchored layout with ◆ separators & accent divider. */
 export default function Hero() {
   const root = useRef<HTMLElement>(null);
+
   useEffect(() => {
     const ctx = gsap.context(() => {
+      /* ── desktop glitch animations (only targets .gl-* inside the md section) ── */
       gsap.from(".gl-line", { opacity: 0, y: 20, duration: 0.8, ease: "power3.out", delay: 0.5 });
       gsap.from(".gl-fade", { opacity: 0, y: 18, duration: 0.8, ease: "power3.out", stagger: 0.12, delay: 0.7 });
 
@@ -40,23 +43,46 @@ export default function Hero() {
       };
       tear(".gl-r", 6);
       tear(".gl-b", -6);
+
+      /* ── mobile entrance (simple fade-up for each mobile element) ── */
+      gsap.from(".mob-in", {
+        opacity: 0,
+        y: 16,
+        duration: 0.7,
+        ease: "power3.out",
+        stagger: 0.1,
+        delay: 0.4,
+      });
     }, root);
     return () => ctx.revert();
   }, []);
 
   return (
     <section ref={root} id="hero" className="relative h-[100svh] min-h-[600px] overflow-hidden">
-      <ThreeScene mode="tunnel" className="pointer-events-none absolute inset-0 z-0 h-full w-full" />
+      {/* ── MOBILE 3D: noise-distorted icosahedron, constrained to top 45% ── */}
+      <div className="pointer-events-none absolute inset-0 z-0 max-md:bottom-[55%] md:hidden">
+        <Hero3D />
+      </div>
+      {/* gradient dissolving icosahedron into bg — mobile only */}
+      <div className="pointer-events-none absolute inset-x-0 top-[28%] z-[1] h-[20%] bg-gradient-to-b from-transparent to-bg md:hidden" />
 
-      {/* scanlines */}
+      {/* ── DESKTOP 3D: particle tunnel ── */}
+      <ThreeScene
+        mode="tunnel"
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full max-md:hidden"
+      />
+
+      {/* scanlines — desktop only (would look odd over the dark mobile bottom area) */}
       <div
-        className="pointer-events-none absolute inset-0 z-[1] opacity-[.05]"
+        className="pointer-events-none absolute inset-0 z-[1] hidden opacity-[.05] md:block"
         style={{ backgroundImage: "repeating-linear-gradient(0deg, #fff 0 1px, transparent 1px 4px)" }}
       />
 
-      {/* vertically centered, left-aligned stack */}
-      <div className="pointer-events-none relative z-[2] flex h-full flex-col justify-center gap-5 pad-x sm:gap-6">
-        <div className="gl-fade flex flex-wrap items-center gap-[.7rem] font-display text-[clamp(.62rem,1.4vw,.9rem)] uppercase tracking-[.2em] text-muted sm:gap-[.8rem] sm:tracking-[.25em]">
+      {/* ═══════════════════════════════════════════════════════════
+          DESKTOP  —  glitch / tunnel, vertically centered
+          ═══════════════════════════════════════════════════════════ */}
+      <div className="pointer-events-none relative z-[2] hidden h-full flex-col justify-center gap-5 pad-x md:flex md:gap-6">
+        <div className="gl-fade flex flex-wrap items-center gap-[.8rem] font-display text-[clamp(.7rem,1.4vw,.9rem)] uppercase tracking-[.25em] text-muted">
           <span>Full-Stack</span>
           <i className="not-italic text-accent">·</i>
           <span>RPA &amp; Automation</span>
@@ -64,19 +90,19 @@ export default function Hero() {
           <span>Reverse Engineering</span>
         </div>
 
-        <div className="relative font-display text-[clamp(2.6rem,11vw,11rem)] font-bold leading-[1.0] tracking-[-.03em] sm:leading-[.95]">
+        <div className="relative font-display text-[clamp(2.6rem,11vw,11rem)] font-bold leading-[1.0] tracking-[-.03em] md:leading-[.95]">
           <h1 className="gl-line relative z-10">
-            <Name />
+            <GlitchName />
           </h1>
           <h1 aria-hidden className="gl-r pointer-events-none absolute inset-0 z-0 text-accent3 mix-blend-screen">
-            <Name />
+            <GlitchName />
           </h1>
           <h1 aria-hidden className="gl-b pointer-events-none absolute inset-0 z-0 text-accent2 mix-blend-screen">
-            <Name />
+            <GlitchName />
           </h1>
         </div>
 
-        <div className="mt-1 flex max-w-[44ch] flex-col gap-5 sm:gap-6">
+        <div className="mt-1 flex max-w-[44ch] flex-col gap-5 md:gap-6">
           <p className="gl-fade pointer-events-auto text-[clamp(.9rem,1.4vw,1.1rem)] leading-[1.55] text-muted">
             I build production features and ruthless automation: LLM-powered products, agentic workflows, and tools
             that thrive where the documentation runs out.
@@ -85,6 +111,41 @@ export default function Hero() {
             <span>Indore, India</span>
             <span id="clock" className="text-accent">—</span>
           </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════
+          MOBILE  —  original bottom-anchored layout
+          ═══════════════════════════════════════════════════════════ */}
+      <div className="pointer-events-none relative z-[2] flex h-full flex-col justify-end pb-24 px-5 md:hidden">
+        {/* tags with ◆ separators */}
+        <div className="mob-in flex flex-wrap items-center gap-x-2 gap-y-1 font-display text-[.6rem] uppercase tracking-[.18em] text-muted mb-3">
+          <span>Full-Stack</span>
+          <i className="not-italic text-accent text-[.5rem]">◆</i>
+          <span>RPA &amp; Automation</span>
+          <i className="not-italic text-accent text-[.5rem]">◆</i>
+          <span>Reverse Engineering</span>
+        </div>
+
+        {/* name */}
+        <h1 className="mob-in font-display text-[2.6rem] font-medium leading-[.9] tracking-[-.02em] mb-5">
+          <span className="block pb-3">{NAME_FIRST}</span>
+          <span className="block text-stroke-mobile">{NAME_LAST}</span>
+        </h1>
+
+        {/* accent divider */}
+        <div className="mob-in w-10 h-[2px] bg-accent mb-5" />
+
+        {/* description */}
+        <p className="mob-in pointer-events-auto text-[.88rem] leading-[1.6] text-muted mb-5 max-w-[38ch]">
+          I build production features and ruthless automation: LLM-powered products, agentic workflows, and tools
+          that thrive where the documentation runs out.
+        </p>
+
+        {/* location + clock */}
+        <div className="mob-in pointer-events-auto flex items-center gap-5 font-display text-[.78rem] tracking-[.05em]">
+          <span>Indore, India</span>
+          <span id="clock-mobile" className="text-accent">—</span>
         </div>
       </div>
     </section>

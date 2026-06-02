@@ -4,7 +4,7 @@ const CATS = [
   { no: "A", title: "RPA, Automation & RE", items: ["RPA / Bot Frameworks", "API / Android Reverse Engineering", "Puppeteer", "Appium", "SSL Proxying", "Burp Suite", "Frida", "Dify"] },
   { no: "B", title: "Frontend", items: ["React", "Next.js", "TypeScript", "Tailwind", "React Native"] },
   { no: "C", title: "Backend & DB", items: ["Node.js", "Python", "PHP", "PostgreSQL", "MongoDB"] },
-  { no: "D", title: "Cloud & Infra", items: ["GCP · Cloud Run", "AWS", "Docker", "CI / CD Pipelines", "Nginx · Reverse Proxy", "Linux · VPS Ops"] },
+  { no: "D", title: "Cloud & Infra", items: ["GCP · Compute · Cloud Run", "AWS · ECS · Lambda", "Docker", "CI / CD Pipelines", "Nginx · Reverse Proxy", "Linux · VPS Ops"] },
 ];
 
 export default function Skills() {

@@ -25,7 +25,7 @@ export const PROJECTS: Project[] = [
     role: "Reverse Engineering",
     image: "/assets/project-ehr.svg",
     tagline: "Turning a closed, UI-only EHR into a programmable API.",
-    desc: "eClinicalWorks ships <strong>no public API</strong>, and every request is wrapped in a <strong>custom encryption layer</strong>, so there was no sanctioned way to automate clinical intake. I sat between the client and the server, captured live traffic, and rebuilt the <strong>payload encryption</strong> and request patterns from scratch.",
+    desc: "eClinicalWorks ships <strong>no public API</strong> — every request is locked behind a <strong>custom encryption layer</strong> with no docs and no shortcuts. I captured live traffic, reverse-engineered the signing flow, and rebuilt <strong>payload encryption</strong> from scratch to talk the platform's native protocol without a browser in sight.",
     bullets: [
       "Reconstructed the request signing and payload encryption flow purely from intercepted traffic.",
       "Built a clean API wrapper that speaks the platform’s native protocol, with no browser and no UI scripting.",
@@ -41,7 +41,7 @@ export const PROJECTS: Project[] = [
     role: "RPA / Anti-Queue",
     image: "/assets/project-bms.svg",
     tagline: "Beating a million-person queue.",
-    desc: "Big drops like <strong>Coldplay</strong>, Travis Scott and the <strong>2023 World Cup</strong> push <strong>a million people</strong> behind Queue-IT in the same second. I built an <strong>RPA</strong> suite that drove <strong>50 isolated browser sessions</strong> in parallel, each one logging itself in, with request timing tuned to surface near the front of the queue.",
+    desc: "Events like <strong>Coldplay</strong> and the <strong>Cricket World Cup</strong> drop over <strong>a million users</strong> into Queue-IT in the same second. I built an <strong>RPA</strong> fleet of <strong>50 parallel sessions</strong> — each self-logging with request timing tuned to hold a position near the very front.",
     bullets: [
       "Ran 50 concurrent Firefox sessions with isolated profiles from a single controller.",
       "Cleared email and OTP verification across every session at once with an IMAP auto-login pipeline.",
@@ -58,7 +58,7 @@ export const PROJECTS: Project[] = [
     role: "Automation Suite",
     image: "/assets/project-ecom.svg",
     tagline: "An automation factory for flash-sale retail.",
-    desc: "A full operations suite for high-volume retail on Myntra and Flipkart. It generated accounts at scale, watched stock and prices in real time, and fired bulk checkouts the moment items dropped. The checkout executor was <strong>request-driven</strong> rather than browser-based, so it held <strong>roughly two-second COD latency</strong> even at <strong>500+ concurrency</strong>, all running serverless on <strong>GCP Cloud Run</strong>.",
+    desc: "A full operations suite for high-volume retail on Myntra and Flipkart — account generation, real-time stock monitors, and bulk checkouts firing the instant items dropped. The executor was <strong>request-driven</strong>, not browser-based, holding <strong>~2s COD latency</strong> even at <strong>500+ concurrency</strong>, all serverless on <strong>GCP Cloud Run</strong>.",
     bullets: [
       "Generated 500+ accounts with a central dashboard for accounts, orders and delivery codes.",
       "Ran restock and price monitors that triggered an instant, request-driven bulk checkout near two seconds.",
@@ -75,7 +75,7 @@ export const PROJECTS: Project[] = [
     role: "On-chain / Low-latency",
     image: "/assets/project-trading.svg",
     tagline: "Mirroring on-chain trades inside a single block.",
-    desc: "A real-time copy-trading engine spanning <strong>Solana and EVM chains</strong> like Ethereum and Base. It watches a set of target wallets over RPC, decodes their swap transactions the moment they land, and mirrors them across multiple copier wallets with configurable allocation, fast enough to execute <strong>within the next block</strong>.",
+    desc: "A real-time copy-trading engine across <strong>Solana</strong> and <strong>EVM chains</strong> — Ethereum, Base, and beyond. It watches target wallets over RPC, decodes swap transactions the moment they land, and mirrors them across multiple copier wallets with per-wallet allocation, fast enough to land <strong>within the next block</strong>.",
     bullets: [
       "Monitored live on-chain activity across Solana and EVM through RPC nodes.",
       "Decoded swap input data to reconstruct each target trade’s exact intent.",

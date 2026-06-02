@@ -61,7 +61,7 @@ export default function Projects() {
                 )}
 
                 <p
-                  className="max-w-[56ch] text-[clamp(.92rem,1.35vw,1.04rem)] text-muted [&_strong]:font-semibold [&_strong]:text-accent"
+                  className="max-w-[56ch] text-[clamp(.92rem,1.35vw,1.04rem)] text-muted [&_strong]:font-semibold [&_strong]:whitespace-nowrap [&_strong]:text-accent"
                   dangerouslySetInnerHTML={{ __html: p.desc }}
                 />
 

@@ -1,5 +1,5 @@
 const STATS = [
-  { count: 6, suffix: "+", label: "Products shipped end to end" },
+  { count: 7, suffix: "+", label: "Products shipped end to end" },
   { count: 4, suffix: "+", label: "Platforms reverse‑engineered" },
   { count: 1, suffix: "M+", label: "Users out-queued in a single drop" },
   { count: 3, suffix: "+", label: "Years building production systems" },
