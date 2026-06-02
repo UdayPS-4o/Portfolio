@@ -1,0 +1,62 @@
+# Portfolio stack for Dokploy.
+#
+#   web  → Next.js frontend (udayps.com)
+#   api  → Express + WebSocket + SQLite backend (udayps.com/api, udayps.com/ws)
+#
+# Both run on the same domain: Traefik routes /api and /ws to the API container
+# (higher priority) and everything else to the web container. SQLite is persisted
+# to the named volume `portfolio-data` (mounted at /app/data in the api container).
+#
+# Dokploy attaches services to its Traefik network (dokploy-network). Set ADMIN_TOKEN
+# as an environment variable in the Dokploy UI to lock down /api/stats.
+
+services:
+  web:
+    build: ./web
+    container_name: uday-web
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+    expose:
+      - "3000"
+    depends_on:
+      - api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uday-web.rule=Host(`udayps.com`) || Host(`www.udayps.com`)"
+      - "traefik.http.routers.uday-web.entrypoints=websecure"
+      - "traefik.http.routers.uday-web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.uday-web.loadbalancer.server.port=3000"
+
+  api:
+    build: ./api
+    container_name: uday-api
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DB_PATH=/app/data/portfolio.db
+      - CORS_ORIGIN=https://udayps.com
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-}
+    volumes:
+      - portfolio-data:/app/data
+    expose:
+      - "4000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uday-api.rule=(Host(`udayps.com`) || Host(`www.udayps.com`)) && (PathPrefix(`/api`) || PathPrefix(`/ws`))"
+      - "traefik.http.routers.uday-api.entrypoints=websecure"
+      - "traefik.http.routers.uday-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.uday-api.priority=100"
+      - "traefik.http.services.uday-api.loadbalancer.server.port=4000"
+
+volumes:
+  portfolio-data:
+
+# Dokploy's shared Traefik network. Comment this out for plain local `docker compose up`.
+networks:
+  default:
+    name: dokploy-network
+    external: true

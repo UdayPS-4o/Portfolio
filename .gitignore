@@ -1,0 +1,19 @@
+# dependencies / build output (handled per-package)
+**/node_modules
+web/.next
+web/out
+api/dist
+api/data/*.db
+api/data/*.db-shm
+api/data/*.db-wal
+
+# env
+**/.env
+**/.env.local
+**/.env*.local
+
+# misc
+.DS_Store
+*.log
+*.tsbuildinfo
+web/next-env.d.ts

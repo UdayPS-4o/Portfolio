@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============ design tokens (also used by JS / Three.js) ============ */
+:root {
+  --accent: #ccff3d;
+  --accent-2: #7c5cff;
+  --accent-3: #ff5c7c;
+  --faint: #54545c;
+  --pad: clamp(1.25rem, 5vw, 6rem);
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-bg text-text font-body;
+    overflow-x: hidden;
+    cursor: none;
+  }
+  ::selection {
+    background: var(--accent);
+    color: #000;
+  }
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  @media (hover: none) {
+    body { cursor: auto; }
+  }
+}
+
+@layer components {
+  /* section horizontal padding helper */
+  .pad-x { padding-left: var(--pad); padding-right: var(--pad); }
+
+  /* outlined hero line */
+  .text-stroke {
+    color: transparent;
+    -webkit-text-stroke: 1.4px #ededf0;
+  }
+  .text-stroke-mobile {
+    color: transparent;
+    -webkit-text-stroke: 1px #ededf0;
+  }
+
+  /* reveal-line wrappers (overflow hidden, but with descender room) */
+  .hero-line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: .2em;
+    margin-bottom: -.2em;
+  }
+  .split-line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: .12em;
+    margin-bottom: -.12em;
+  }
+  .reveal-line {
+    display: block;
+    overflow: hidden;
+  }
+  /* starts clipped; JS sets transition + translateY(0) to animate in */
+  .reveal-line > span {
+    display: block;
+    transform: translateY(110%);
+  }
+
+  /* cursor: hidden until first mousemove (JS overrides opacity inline) */
+  .cursor, .cursor-dot {
+    transition: opacity 0.3s;
+  }
+
+  /* film grain */
+  .grain {
+    position: fixed;
+    inset: -50%;
+    z-index: 9000;
+    pointer-events: none;
+    opacity: .045;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    @apply animate-grain;
+  }
+
+  /* custom cursor */
+  .cursor,
+  .cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    pointer-events: none;
+    border-radius: 50%;
+    mix-blend-mode: difference;
+  }
+  .cursor {
+    width: 38px;
+    height: 38px;
+    border: 1px solid #fff;
+    transform: translate(-50%, -50%);
+    transition: width .35s var(--ease), height .35s var(--ease), background .35s var(--ease), opacity .3s;
+  }
+  .cursor-dot {
+    width: 5px;
+    height: 5px;
+    background: #fff;
+    transform: translate(-50%, -50%);
+  }
+  .cursor.is-hover {
+    width: 78px;
+    height: 78px;
+    background: rgba(255, 255, 255, .08);
+  }
+  @media (hover: none) {
+    .cursor, .cursor-dot { display: none; }
+  }
+
+  /* project image reveal overlay */
+  .reveal-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: var(--accent);
+    transform-origin: bottom;
+    transform: scaleY(1);
+    transition: transform 1s var(--ease);
+  }
+  .is-revealed .reveal-overlay { transform: scaleY(0); }
+
+  /* brand variants (one picked at random by JS) */
+  .brand-variant { display: none; }
+  .brand-variant.is-active { display: inline-flex; }
+  .nav__brand:hover .bv-ln { transform: scaleX(1); }
+
+  /* floating new-message bars: fade up, hold, fade out over their 4s lifetime */
+  .chat-toast {
+    cursor: pointer;
+    animation: toastfloat 4s var(--ease) forwards;
+  }
+  body:has(.chat-toast:hover) .cursor,
+  body:has(.chat-toast:hover) .cursor-dot { opacity: 0 !important; }
+
+  /* live chat: use the native cursor, and hide the custom ring while hovering it */
+  .live-chat { cursor: auto; }
+  .live-chat input { cursor: text; }
+  .live-chat button { cursor: pointer; }
+  body:has(.live-chat:hover) .cursor,
+  body:has(.live-chat:hover) .cursor-dot { opacity: 0 !important; }
+
+  /* diamond bullet */
+  .diamond-list li {
+    position: relative;
+    padding-left: 1.4rem;
+  }
+  .diamond-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .55em;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    transform: rotate(45deg);
+  }
+}
+
+@keyframes toastfloat {
+  0% { opacity: 0; transform: translateY(10px) scale(.96); }
+  12% { opacity: 1; transform: translateY(0) scale(1); }
+  82% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-8px) scale(.98); }
+}
+
+/* split helpers set by JS */
+.char,
+[data-w] {
+  display: inline-block;
+  will-change: transform;
+}
+.w-dim { color: var(--faint); }
+.reveal-fade { opacity: 0; }

@@ -1,0 +1,19 @@
+{
+  "name": "uday-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo: Next.js frontend (web) + Express/WS/SQLite backend (api).",
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c magenta,cyan \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm --prefix api run dev",
+    "dev:web": "npm --prefix web run dev",
+    "build": "npm --prefix api run build && npm --prefix web run build",
+    "start:api": "npm --prefix api run start",
+    "start:web": "npm --prefix web run start",
+    "install:all": "npm install && npm --prefix api install && npm --prefix web install",
+    "postinstall": "npm --prefix api install && npm --prefix web install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
