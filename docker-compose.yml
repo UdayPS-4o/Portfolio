@@ -25,7 +25,7 @@ services:
       - api
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.uday-web.rule=Host(`udayps.com`) || Host(`www.udayps.com`)"
+      - "traefik.http.routers.uday-web.rule=Host(`udayps.com`) || Host(`www.udayps.com`) || Host(`portfolio.udayps.com`) || Host(`me.udayps.com`)"
       - "traefik.http.routers.uday-web.entrypoints=websecure"
       - "traefik.http.routers.uday-web.tls.certresolver=letsencrypt"
       - "traefik.http.services.uday-web.loadbalancer.server.port=3000"
@@ -38,7 +38,7 @@ services:
       - NODE_ENV=production
       - PORT=4000
       - DB_PATH=/app/data/portfolio.db
-      - CORS_ORIGIN=https://udayps.com
+      - CORS_ORIGIN=https://portfolio.udayps.com,https://me.udayps.com,https://udayps.com
       - ADMIN_TOKEN=${ADMIN_TOKEN:-}
     volumes:
       - portfolio-data:/app/data
@@ -46,7 +46,7 @@ services:
       - "4000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.uday-api.rule=(Host(`udayps.com`) || Host(`www.udayps.com`)) && (PathPrefix(`/api`) || PathPrefix(`/ws`))"
+      - "traefik.http.routers.uday-api.rule=(Host(`udayps.com`) || Host(`www.udayps.com`) || Host(`portfolio.udayps.com`) || Host(`me.udayps.com`)) && (PathPrefix(`/api`) || PathPrefix(`/ws`))"
       - "traefik.http.routers.uday-api.entrypoints=websecure"
       - "traefik.http.routers.uday-api.tls.certresolver=letsencrypt"
       - "traefik.http.routers.uday-api.priority=100"

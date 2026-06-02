@@ -9,8 +9,10 @@ export const config = {
   // SQLite file — mounted to a Docker volume in production (see docker-compose.yml)
   dbPath: process.env.DB_PATH || path.resolve(process.cwd(), "data", "portfolio.db"),
 
-  // CORS origin for the REST API (the WebSocket is same-origin via the proxy)
-  corsOrigin: process.env.CORS_ORIGIN || "*",
+  // CORS origin for the REST API — supports comma-separated list of origins
+  corsOrigin: process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(",").map((s) => s.trim())
+    : "*",
 
   // Optional bearer token to protect the /api/stats admin endpoint
   adminToken: process.env.ADMIN_TOKEN || "",
