@@ -37,7 +37,7 @@ export const PROJECTS: Project[] = [
   {
     title: "High-Concurrency Ticketing",
     client: "BookMyShow",
-    year: "2024 to 2025",
+    year: "2023",
     role: "RPA / Anti-Queue",
     image: "/assets/project-bms.svg",
     tagline: "Beating a million-person queue.",
