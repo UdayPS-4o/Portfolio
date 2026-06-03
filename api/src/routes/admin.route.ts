@@ -4,6 +4,7 @@ import { getDb } from "../db";
 import { config } from "../config";
 import { presenceService } from "../services/presenceService";
 import { chatService } from "../services/chatService";
+import { identityRepository } from "../repositories/identityRepository";
 
 const router = Router();
 
@@ -225,11 +226,9 @@ router.get("/admin/dashboard", sessionAdminAuth, (_req, res) => {
         count: number;
       }
     ).count,
-    uniqueVisitors: (
-      db
-        .prepare("SELECT COUNT(DISTINCT ip) AS count FROM visits")
-        .get() as { count: number }
-    ).count,
+    // distinct PEOPLE (identity graph: merged across fingerprint + IP), not raw IPs —
+    // so a phone hopping wifi↔5G counts once, not once per network.
+    uniqueVisitors: identityRepository.uniquePersonCount(),
     liveConnections: liveConnections.length,
     totalMessages: (
       db.prepare("SELECT COUNT(*) AS count FROM chat_messages").get() as {

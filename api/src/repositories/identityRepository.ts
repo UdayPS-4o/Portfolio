@@ -68,6 +68,61 @@ export const identityRepository = {
   },
 
   /**
+   * Count DISTINCT people across the whole identity graph. Two visitor_ids are the
+   * same person if they share a fingerprint (same device/browser) or an IP (same
+   * network) — transitively. This collapses a phone that hopped wifi→5G, a browser
+   * whose localStorage was cleared, etc., into a single person instead of inflating
+   * "unique visitors" on every network change. Computed with union-find at read time;
+   * no historical rows are rewritten.
+   */
+  uniquePersonCount(): number {
+    const rows = getDb()
+      .prepare(`SELECT visitor_id AS v, fingerprint AS f, ip FROM identities`)
+      .all() as Array<{ v: string; f: string | null; ip: string | null }>;
+
+    const parent = new Map<string, string>();
+    const find = (x: string): string => {
+      let root = x;
+      while (parent.get(root) !== root) root = parent.get(root)!;
+      // path-compress
+      let cur = x;
+      while (parent.get(cur) !== root) {
+        const next = parent.get(cur)!;
+        parent.set(cur, root);
+        cur = next;
+      }
+      return root;
+    };
+    const union = (a: string, b: string) => {
+      const ra = find(a);
+      const rb = find(b);
+      if (ra !== rb) parent.set(ra, rb);
+    };
+
+    for (const { v } of rows) if (v && !parent.has(v)) parent.set(v, v);
+
+    const repByFp = new Map<string, string>();
+    const repByIp = new Map<string, string>();
+    for (const { v, f, ip } of rows) {
+      if (!v) continue;
+      if (f) {
+        const seen = repByFp.get(f);
+        if (seen) union(v, seen);
+        else repByFp.set(f, v);
+      }
+      if (ip) {
+        const seen = repByIp.get(ip);
+        if (seen) union(v, seen);
+        else repByIp.set(ip, v);
+      }
+    }
+
+    const roots = new Set<string>();
+    for (const v of parent.keys()) roots.add(find(v));
+    return roots.size;
+  },
+
+  /**
    * Best known name for a person, matching on (in priority order) the same
    * browser, the same device fingerprint, then the same network/IP. Lets a
    * returning or cross-device visitor reuse a name they typed elsewhere.

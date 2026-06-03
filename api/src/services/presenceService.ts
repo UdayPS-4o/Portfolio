@@ -53,31 +53,39 @@ class PresenceService {
     return n;
   }
 
-  /** The recipient's own footprint: tabs here, plus their other devices on this network. */
+  /**
+   * The recipient's own footprint. Counts DISTINCT devices (by visitorId), not raw
+   * connections — so multiple tabs, or a stale socket plus its reconnect after a
+   * network switch (same visitorId), collapse to a single device instead of showing
+   * phantom "2 mob / 3 mob". `here` stays a tab count for the recipient's own browser.
+   */
   personalFor(recipient: Connection): PersonalPresence {
     let here = 0;
-    let pc = 0;
-    let mobile = 0;
-    let total = 0;
+    const pcIds = new Set<string>();
+    const mobileIds = new Set<string>();
     for (const c of this.connections) {
+      if (!c.isOpen()) continue;
       if (!isSamePerson(c, recipient)) continue;
-      total += 1;
       if (c.visitorId === recipient.visitorId) here += 1;
-      if (c.device === "mobile") mobile += 1;
-      else pc += 1;
+      if (c.device === "mobile") mobileIds.add(c.visitorId);
+      else pcIds.add(c.visitorId);
     }
-    return { here, pc, mobile, total, linked: total > here };
+    const pc = pcIds.size;
+    const mobile = mobileIds.size;
+    const total = pc + mobile; // distinct devices
+    return { here, pc, mobile, total, linked: total > 1 };
   }
 
   snapshot(): PresenceSnapshot {
     const clusters: Array<Set<Connection>> = [];
-    let adminTabs = 0;
+    let nonAdminTabs = 0;
 
     for (const c of this.connections) {
+      if (!c.isOpen()) continue; // skip sockets already closing/dead
       if (c.visitorId === "admin-udayps") {
-        adminTabs += 1;
         continue;
       }
+      nonAdminTabs += 1;
 
       // Find an existing cluster where c is the same person as at least one connection
       let foundCluster: Set<Connection> | null = null;
@@ -117,7 +125,7 @@ class PresenceService {
     }
 
     const users = clusters.length;
-    const tabs = this.connections.size - adminTabs;
+    const tabs = nonAdminTabs;
 
     return {
       users,
@@ -147,6 +155,7 @@ class PresenceService {
   getConnections(): Array<{id: string; visitorId: string; device: string; ip: string; fingerprint: string}> {
     const result: Array<{id: string; visitorId: string; device: string; ip: string; fingerprint: string}> = [];
     for (const c of this.connections) {
+      if (!c.isOpen()) continue; // don't report dead sockets to the admin live view
       result.push({ id: c.id, visitorId: c.visitorId, device: c.device, ip: c.ip, fingerprint: c.fingerprint });
     }
     return result;
