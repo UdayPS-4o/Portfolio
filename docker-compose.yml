@@ -19,13 +19,14 @@
 
 services:
   web:
+    # SAME-ORIGIN: no NEXT_PUBLIC_* build args are passed, so API_BASE="" and the
+    # client talks to /api + /ws on its own origin (portfolio.udayps.com).
+    # Do NOT pass NEXT_PUBLIC_API_URL / NEXT_PUBLIC_WS_URL here — a stale value (e.g.
+    # wss://api.udayps.com/ws) gets inlined into the bundle at build time and breaks
+    # the WebSocket. If you ever need an absolute API origin, add the args back AND
+    # set the matching Dokploy env, then REBUILD (not just restart).
     build:
       context: ./web
-      # NEXT_PUBLIC_API_URL intentionally omitted → frontend uses same-origin /api + /ws.
-      # (You can still set NEXT_PUBLIC_API_URL to force an absolute API origin.)
-      args:
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-}
-        - NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL:-}
     container_name: uday-web
     restart: unless-stopped
     environment:
