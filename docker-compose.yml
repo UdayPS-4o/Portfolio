@@ -1,24 +1,30 @@
-# Portfolio stack for Dokploy.
+# Portfolio stack for Dokploy — SAME-ORIGIN routing.
 #
-#   web  → Next.js frontend  (portfolio.udayps.com / me.udayps.com)
-#   api  → Express + WS + SQLite backend  (api.udayps.com)
+#   web  → Next.js frontend
+#   api  → Express + WebSocket + SQLite backend
 #
-# Routing is managed entirely by Dokploy's Traefik UI — no custom labels here.
-# Set the following in Dokploy → Environment before deploying:
+# Everything is served from ONE domain. Traefik path-routes:
+#       portfolio.udayps.com/api   →  api container (REST)
+#       portfolio.udayps.com/ws    →  api container (WebSocket; Traefik upgrades it)
+#       portfolio.udayps.com/*     →  web container (Next.js)
 #
-#   NEXT_PUBLIC_WS_URL   wss://api.udayps.com/ws
-#   ADMIN_TOKEN          (optional, locks /api/stats)
+# Because the API is same-origin, the frontend just uses relative "/api" and "/ws"
+# (see web/src/lib/api.ts). No CORS, and NO build-time NEXT_PUBLIC_API_URL needed —
+# leave it unset so API_BASE = "" (same origin).
 #
-# Dokploy domains to configure:
-#   web service  → portfolio.udayps.com  port 3000  (HTTPS, letsencrypt)
-#   web service  → me.udayps.com         port 3000  (HTTPS, letsencrypt)
-#   api service  → api.udayps.com        port 4000  (HTTPS, letsencrypt)
+# NOTE: routing is defined by the Traefik labels below. In Dokploy do NOT also add
+# UI domains for these services (that would create competing routers). Just make sure
+# the app is attached to the dokploy-network (it is, below). Adjust the host rule and
+# certresolver name ("letsencrypt") to match your Dokploy Traefik setup.
 
 services:
   web:
     build:
       context: ./web
+      # NEXT_PUBLIC_API_URL intentionally omitted → frontend uses same-origin /api + /ws.
+      # (You can still set NEXT_PUBLIC_API_URL to force an absolute API origin.)
       args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-}
         - NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL:-}
     container_name: uday-web
     restart: unless-stopped
@@ -30,6 +36,16 @@ services:
       - "3000"
     depends_on:
       - api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      # catch-all for the domain → Next.js (lower priority than the /api + /ws router)
+      - "traefik.http.routers.uday-web.rule=Host(`portfolio.udayps.com`) || Host(`me.udayps.com`)"
+      - "traefik.http.routers.uday-web.entrypoints=websecure"
+      - "traefik.http.routers.uday-web.tls=true"
+      - "traefik.http.routers.uday-web.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.uday-web.priority=1"
+      - "traefik.http.services.uday-web.loadbalancer.server.port=3000"
 
   api:
     build: ./api
@@ -39,12 +55,23 @@ services:
       - NODE_ENV=production
       - PORT=4000
       - DB_PATH=/app/data/portfolio.db
-      - CORS_ORIGIN=${CORS_ORIGIN:-https://portfolio.udayps.com,https://me.udayps.com}
+      # same-origin ⇒ CORS not needed; kept permissive as a fallback for dev tools
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
       - ADMIN_TOKEN=${ADMIN_TOKEN:-}
     volumes:
       - portfolio-data:/app/data
     expose:
       - "4000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      # /api and /ws on the same domain → backend. Higher priority so it wins over web.
+      - "traefik.http.routers.uday-api.rule=(Host(`portfolio.udayps.com`) || Host(`me.udayps.com`)) && (PathPrefix(`/api`) || PathPrefix(`/ws`))"
+      - "traefik.http.routers.uday-api.entrypoints=websecure"
+      - "traefik.http.routers.uday-api.tls=true"
+      - "traefik.http.routers.uday-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.uday-api.priority=100"
+      - "traefik.http.services.uday-api.loadbalancer.server.port=4000"
 
 volumes:
   portfolio-data:

@@ -8,7 +8,10 @@ RUN npm ci
 FROM node:20-alpine AS build
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
-# Accept WS URL at build time so Next.js can inline NEXT_PUBLIC_ vars
+# Accept public URLs at build time so Next.js can inline NEXT_PUBLIC_ vars.
+# NEXT_PUBLIC_API_URL drives both HTTP and WebSocket (see web/src/lib/api.ts).
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_WS_URL
 ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
 COPY --from=deps /app/node_modules ./node_modules

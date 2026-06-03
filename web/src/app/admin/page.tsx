@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { API_BASE, resolveWsUrl } from "@/lib/api";
 
 /* ────────────────────────── types ────────────────────────── */
 
@@ -62,13 +63,6 @@ interface ChatMsg {
 }
 
 /* ────────────────────────── constants ────────────────────── */
-
-const API_BASE =
-  process.env.NODE_ENV === "production" ? "" : "http://localhost:4000";
-const WS_URL =
-  process.env.NODE_ENV === "production"
-    ? `wss://${typeof window !== "undefined" ? window.location.host : ""}/ws`
-    : "ws://localhost:4000/ws";
 
 const TABS = ["Live", "Visits", "Identity Graph", "Chat"] as const;
 type Tab = (typeof TABS)[number];
@@ -173,7 +167,7 @@ export default function AdminPage() {
       fp: "admin",
       token: token,
     });
-    const ws = new WebSocket(`${WS_URL}?${params}`);
+    const ws = new WebSocket(`${resolveWsUrl()}?${params}`);
     wsRef.current = ws;
 
     ws.onopen = () => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { resolveWsUrl } from "@/lib/api";
 
 type You = { here: number; pc: number; mobile: number; total: number; linked: boolean };
 type Presence = { users: number; tabs: number; mobile: number; pc: number; youTabs: number; you?: You };
@@ -251,14 +252,8 @@ export default function LivePresence() {
 
     const connect = () => {
       if (closed) return;
-      // Prod: same-origin /ws (Traefik routes it to the API container).
-      // Dev: auto-target the local API on :4000. Override with NEXT_PUBLIC_WS_URL.
-      const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
-      const base =
-        process.env.NEXT_PUBLIC_WS_URL ||
-        (isLocal
-          ? `ws://${location.hostname}:4000/ws`
-          : `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`);
+      // Resolved from NEXT_PUBLIC_API_URL / NEXT_PUBLIC_WS_URL (see src/lib/api.ts).
+      const base = resolveWsUrl();
       const ws = new WebSocket(
         `${base}?vid=${encodeURIComponent(vid)}&device=${isActualMobile ? "mobile" : "pc"}&fp=${encodeURIComponent(fp)}&cip=${encodeURIComponent(clientIp)}`
       );
