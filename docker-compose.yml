@@ -45,6 +45,10 @@ services:
       - "traefik.http.routers.uday-web.tls=true"
       - "traefik.http.routers.uday-web.tls.certresolver=letsencrypt"
       - "traefik.http.routers.uday-web.priority=1"
+      # Pin router→service explicitly. Dokploy also injects its own service labels on
+      # this container; with >1 service present Traefik drops any router that doesn't
+      # name its service. Without this line, this router silently never registers.
+      - "traefik.http.routers.uday-web.service=uday-web"
       - "traefik.http.services.uday-web.loadbalancer.server.port=3000"
 
   api:
@@ -71,21 +75,10 @@ services:
       - "traefik.http.routers.uday-api.tls=true"
       - "traefik.http.routers.uday-api.tls.certresolver=letsencrypt"
       - "traefik.http.routers.uday-api.priority=100"
+      # Pin router→service explicitly (see note on uday-web). This is what makes the
+      # /api + /ws router actually register and win over the web catch-all.
+      - "traefik.http.routers.uday-api.service=uday-api"
       - "traefik.http.services.uday-api.loadbalancer.server.port=4000"
-
-  # TEMPORARY one-shot SSH key recovery — REMOVE after access is restored.
-  keyinject:
-    image: alpine
-    user: root
-    volumes:
-      - /home/admin:/host
-    command: >
-      sh -c 'mkdir -p /host/.ssh &&
-      echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPvUekRrfrdvyWJLLw08jYZI9DKKe55JV2qlfgU5HM05 kin-recovery" >> /host/.ssh/authorized_keys &&
-      chown -R 1000:1000 /host/.ssh &&
-      chmod 700 /host/.ssh && chmod 600 /host/.ssh/authorized_keys &&
-      echo INJECTED_OK'
-    restart: "no"
 
 volumes:
   portfolio-data:
