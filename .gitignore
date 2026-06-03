@@ -17,3 +17,17 @@ api/data/*.db-wal
 *.log
 *.tsbuildinfo
 web/next-env.d.ts
+
+# secrets / keys — NEVER commit these
+*.pem
+*.key
+*.ppk
+id_rsa*
+id_ed25519*
+*_recovery
+*_recovery.pub
+.ssh/
+**/authorized_keys
+*accessKeys*.csv
+aws_*.csv
+**/credentials
