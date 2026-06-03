@@ -38,7 +38,11 @@ export function attachWebSocket(server: Server): WebSocketServer {
   });
 
   // Ping + reap dead sockets. terminate() fires 'close' → presenceService.remove →
-  // a fresh presence broadcast, so phantom devices vanish on their own.
+  // a fresh presence broadcast, so phantom devices vanish on their own. It's a
+  // two-phase check (ping one round, terminate the next), so a dead socket is gone
+  // within ~one to two intervals. Browser pongs are automatic and sub-second even on
+  // mobile, so a 5s grace is safe and keeps zombie cleanup snappy (~5–10s).
+  const HEARTBEAT_MS = 5000;
   const interval = setInterval(() => {
     for (const ws of wss.clients) {
       if (alive.get(ws) === false) {
@@ -52,9 +56,9 @@ export function attachWebSocket(server: Server): WebSocketServer {
         /* will be terminated next round */
       }
     }
-  }, 12000);
+  }, HEARTBEAT_MS);
   wss.on("close", () => clearInterval(interval));
 
-  log.info(`WebSocket mounted at ${config.wsPath} (heartbeat 12s)`);
+  log.info(`WebSocket mounted at ${config.wsPath} (heartbeat ${HEARTBEAT_MS}ms)`);
   return wss;
 }
