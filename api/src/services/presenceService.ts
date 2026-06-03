@@ -54,26 +54,26 @@ class PresenceService {
   }
 
   /**
-   * The recipient's own footprint. Counts DISTINCT devices (by visitorId), not raw
-   * connections — so multiple tabs, or a stale socket plus its reconnect after a
-   * network switch (same visitorId), collapse to a single device instead of showing
-   * phantom "2 mob / 3 mob". `here` stays a tab count for the recipient's own browser.
+   * The recipient's own footprint, counted as live TABS (open connections) split by
+   * device — so 2 tabs in one browser + 1 incognito reads as 3, which is what the
+   * user expects. Phantom tabs from a network switch (the dropped socket lingering
+   * next to its reconnect) are handled by the 12s heartbeat in websocket/index.ts,
+   * which terminates the dead one and triggers a fresh broadcast; we only count
+   * sockets that are still open here. `here` = tabs of the recipient's own browser.
    */
   personalFor(recipient: Connection): PersonalPresence {
     let here = 0;
-    const pcIds = new Set<string>();
-    const mobileIds = new Set<string>();
+    let pc = 0;
+    let mobile = 0;
     for (const c of this.connections) {
       if (!c.isOpen()) continue;
       if (!isSamePerson(c, recipient)) continue;
       if (c.visitorId === recipient.visitorId) here += 1;
-      if (c.device === "mobile") mobileIds.add(c.visitorId);
-      else pcIds.add(c.visitorId);
+      if (c.device === "mobile") mobile += 1;
+      else pc += 1;
     }
-    const pc = pcIds.size;
-    const mobile = mobileIds.size;
-    const total = pc + mobile; // distinct devices
-    return { here, pc, mobile, total, linked: total > 1 };
+    const total = pc + mobile;
+    return { here, pc, mobile, total, linked: total > here };
   }
 
   snapshot(): PresenceSnapshot {
