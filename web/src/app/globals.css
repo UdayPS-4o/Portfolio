@@ -72,8 +72,11 @@
     transform: translateY(110%);
   }
 
-  /* cursor: hidden until first mousemove (JS overrides opacity inline) */
+  /* cursor: hidden from the very first paint until the first mousemove, so it
+     never flashes at the top-left corner before Effects.tsx initialises it.
+     JS sets opacity back to 1 (at the real pointer position) on first move. */
   .cursor, .cursor-dot {
+    opacity: 0;
     transition: opacity 0.3s;
   }
 
