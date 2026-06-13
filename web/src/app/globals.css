@@ -171,6 +171,18 @@
     background: var(--accent);
     transform: rotate(45deg);
   }
+
+  /* command palette: native cursor + hide the custom ring while open */
+  html.palette-open .cursor,
+  html.palette-open .cursor-dot { opacity: 0 !important; }
+  html.palette-open body { cursor: auto; }
+
+  /* mythic terminal: native cursor inside the window; hide the custom ring while hovering it */
+  .terminal-open { cursor: auto; }
+  .terminal-open input { cursor: text; }
+  .terminal-open button, .terminal-open a { cursor: pointer; }
+  body:has(.terminal-open:hover) .cursor,
+  body:has(.terminal-open:hover) .cursor-dot { opacity: 0 !important; }
 }
 
 @keyframes toastfloat {
