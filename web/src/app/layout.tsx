@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -22,16 +22,43 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Uday Pratap Singh — Engineer",
+  metadataBase: new URL("https://udayps.com"),
+  title: {
+    default: "Uday Pratap Singh — Full-Stack · RPA · Reverse Engineering",
+    template: "%s — Uday Pratap Singh",
+  },
   description:
-    "Uday Pratap Singh Parihar — Full-Stack Developer, RPA, Automation & Reverse Engineering. Building LLM-powered products, agentic workflows, and high-throughput systems.",
+    "Uday Pratap Singh Parihar — Full-Stack Developer, RPA, Automation & Reverse Engineering. Building LLM-powered products, agentic workflows, and high-throughput systems that thrive where the documentation runs out.",
   authors: [{ name: "Uday Pratap Singh Parihar" }],
+  keywords: [
+    "Full-Stack Developer",
+    "Reverse Engineering",
+    "RPA",
+    "Automation",
+    "LLM",
+    "Agentic Workflows",
+    "Indore",
+  ],
   openGraph: {
     title: "Uday Pratap Singh — Full-Stack · RPA · Reverse Engineering",
     description:
-      "Full-stack developer shipping production features and building efficient automation systems.",
+      "Production features and ruthless automation: LLM-powered products, agentic workflows, and tools that thrive where the documentation runs out.",
     type: "website",
+    locale: "en_US",
+    siteName: "uday.exe",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Uday Pratap Singh — Full-Stack · RPA · Reverse Engineering",
+    description:
+      "Production features and ruthless automation: LLM-powered products, agentic workflows, high-throughput systems.",
+  },
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#070709",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
