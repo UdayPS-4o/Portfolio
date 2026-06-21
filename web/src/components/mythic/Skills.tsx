@@ -303,7 +303,7 @@ export default function Skills() {
       id="skills"
       ref={rootRef}
       data-section-name="05 / SKILLS"
-      className="relative pad-x py-[clamp(5rem,14vh,11rem)]"
+      className="relative pad-x py-[clamp(2rem,6vh,3.5rem)] md:py-[clamp(5rem,14vh,11rem)]"
     >
       <SectionHeading index="05" title="SKILLS" sub="tools & technologies" />
 

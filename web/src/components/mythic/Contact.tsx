@@ -215,7 +215,7 @@ export default function Contact() {
       ref={rootRef}
       id="contact"
       data-section-name="06 / CONTACT"
-      className="pad-x relative flex min-h-[90vh] flex-col justify-center overflow-hidden py-[clamp(5rem,12vh,9rem)]"
+      className="pad-x relative flex flex-col overflow-hidden py-[clamp(2rem,6vh,3.5rem)] md:min-h-[90vh] md:justify-center md:py-[clamp(5rem,12vh,9rem)]"
     >
       {/* ghost watermark */}
       <div

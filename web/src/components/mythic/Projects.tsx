@@ -92,7 +92,7 @@ export default function Projects() {
       ref={root}
       id="projects"
       data-section-name="04 / SELECTED WORK"
-      className="relative pad-x py-[clamp(5rem,12vh,11rem)]"
+      className="relative pad-x py-[clamp(2rem,6vh,3.5rem)] md:py-[clamp(5rem,12vh,11rem)]"
     >
       <SectionHeading
         index="04"
@@ -109,8 +109,8 @@ export default function Projects() {
             <article
               key={p.title}
               data-cursor="hover"
-              className={`grid grid-cols-1 items-center gap-[clamp(2rem,5vw,5rem)] pb-[clamp(3rem,7vh,6rem)] md:grid-cols-2 ${
-                i > 0 ? "border-t border-line pt-[clamp(3rem,7vh,6rem)]" : ""
+              className={`grid grid-cols-1 items-center gap-[clamp(2rem,5vw,5rem)] pb-[clamp(1.75rem,4.5vh,3rem)] md:grid-cols-2 md:pb-[clamp(3rem,7vh,6rem)] ${
+                i > 0 ? "border-t border-line pt-[clamp(1.75rem,4.5vh,3rem)] md:pt-[clamp(3rem,7vh,6rem)]" : ""
               }`}
             >
               {/* visual */}

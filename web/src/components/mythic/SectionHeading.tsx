@@ -43,7 +43,9 @@ export default function SectionHeading({ index, title, label, sub, className = "
         return;
       }
 
-      const chars = titleRef.current ? splitChars(titleRef.current) : [];
+      const chars = titleRef.current
+        ? splitChars(titleRef.current, { groupWords: true })
+        : [];
       gsap.set(chars, { yPercent: 110 });
 
       const tl = gsap.timeline({
@@ -102,7 +104,7 @@ export default function SectionHeading({ index, title, label, sub, className = "
       <div className="-mb-[.12em] mt-5 overflow-hidden pb-[.12em]">
         <h2
           ref={titleRef}
-          className="font-display text-[clamp(2.8rem,8vw,7.5rem)] font-bold leading-[.92] tracking-[-.03em]"
+          className="font-display text-[clamp(2.25rem,8vw,7.5rem)] font-bold leading-[.92] tracking-[-.03em]"
         >
           {title}
         </h2>
