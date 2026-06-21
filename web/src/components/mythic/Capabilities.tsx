@@ -170,7 +170,7 @@ export default function Capabilities() {
       id="capabilities"
       ref={rootRef}
       data-section-name="02 / CAPABILITIES"
-      className="relative pad-x py-[clamp(5rem,14vh,11rem)]"
+      className="relative pad-x py-[clamp(2rem,6vh,3.5rem)] md:py-[clamp(5rem,14vh,11rem)]"
     >
       <SectionHeading index="02" title="CAPABILITIES" sub="areas of focus" />
 

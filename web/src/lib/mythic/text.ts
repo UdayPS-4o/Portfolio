@@ -15,14 +15,25 @@ function reducedMotion(): boolean {
 /**
  * Split an element's text into per-character spans (`.mchar`).
  * Idempotent — re-calling returns the existing spans. Spaces become &nbsp;.
+ *
+ * With `{ groupWords: true }` each word's chars are wrapped in an inline-block,
+ * `white-space: nowrap` span and spaces become real (breakable) text nodes — so
+ * the line only ever breaks *between* words, never mid-word. Use it for big
+ * display headings that have to wrap on narrow viewports. (Default keeps the
+ * legacy flat layout where spaces are &nbsp; and breaks fall between letters,
+ * which single-word callers like the contact email rely on.)
  */
-export function splitChars(el: HTMLElement): HTMLElement[] {
+export function splitChars(
+  el: HTMLElement,
+  opts: { groupWords?: boolean } = {}
+): HTMLElement[] {
   if (el.dataset.msplit !== "chars") {
     const text = el.textContent ?? "";
     el.setAttribute("aria-label", text);
     el.textContent = "";
     const frag = document.createDocumentFragment();
-    for (const ch of Array.from(text)) {
+
+    const makeChar = (ch: string): HTMLElement => {
       const s = document.createElement("span");
       s.className = "mchar";
       s.setAttribute("aria-hidden", "true");
@@ -30,8 +41,27 @@ export function splitChars(el: HTMLElement): HTMLElement[] {
       s.style.willChange = "transform";
       if (/\s/.test(ch)) s.innerHTML = "&nbsp;";
       else s.textContent = ch;
-      frag.appendChild(s);
+      return s;
+    };
+
+    if (opts.groupWords) {
+      text.split(/(\s+)/).forEach((part) => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(" "));
+          return;
+        }
+        const word = document.createElement("span");
+        word.setAttribute("aria-hidden", "true");
+        word.style.display = "inline-block";
+        word.style.whiteSpace = "nowrap";
+        for (const ch of Array.from(part)) word.appendChild(makeChar(ch));
+        frag.appendChild(word);
+      });
+    } else {
+      for (const ch of Array.from(text)) frag.appendChild(makeChar(ch));
     }
+
     el.appendChild(frag);
     el.dataset.msplit = "chars";
   }

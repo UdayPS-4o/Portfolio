@@ -303,7 +303,7 @@ export default function About() {
     <section
       id="about"
       data-section-name="01 / ABOUT"
-      className="relative pad-x py-[clamp(5rem,14vh,11rem)]"
+      className="relative pad-x py-[clamp(2rem,6vh,3.5rem)] md:py-[clamp(5rem,14vh,11rem)]"
     >
       <SectionHeading index="01" title="ABOUT" sub="background & focus" />
 

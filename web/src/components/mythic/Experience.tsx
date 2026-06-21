@@ -154,7 +154,7 @@ export default function Experience() {
       id="work"
       ref={rootRef}
       data-section-name="03 / EXPERIENCE"
-      className="relative pad-x py-[clamp(5rem,14vh,11rem)]"
+      className="relative pad-x py-[clamp(2rem,6vh,3.5rem)] md:py-[clamp(5rem,14vh,11rem)]"
     >
       <SectionHeading index="03" label="EXPERIENCE" title="Where I’ve shipped" />
 
@@ -166,7 +166,7 @@ export default function Experience() {
           </div>
         </div>
 
-        <ol className="mxp-entries flex flex-col gap-[clamp(6rem,30vh,20rem)] pt-[clamp(1.5rem,5vh,3.5rem)] pb-[clamp(3rem,9vh,7rem)]">
+        <ol className="mxp-entries flex flex-col gap-[clamp(4rem,12vh,7rem)] pt-[clamp(1.5rem,5vh,3.5rem)] pb-[clamp(2.5rem,6vh,7rem)] md:gap-[clamp(6rem,30vh,20rem)] md:pb-[clamp(3rem,9vh,7rem)]">
           {ENTRIES.map((e) => (
             <li key={e.company} className="mxp-entry" data-cursor="hover">
               <span aria-hidden="true" className="mxp-node" />
