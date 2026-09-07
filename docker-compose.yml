@@ -3,19 +3,16 @@
 #   web  → Next.js frontend
 #   api  → Express + WebSocket + SQLite backend
 #
-# Everything is served from ONE domain. Traefik path-routes:
-#       portfolio.udayps.com/api   →  api container (REST)
-#       portfolio.udayps.com/ws    →  api container (WebSocket; Traefik upgrades it)
-#       portfolio.udayps.com/*     →  web container (Next.js)
+# Everything is served from ONE domain via Dokploy's own domain feature (path-based
+# routes configured in the Dokploy UI/API: "/api" and "/ws" -> api:4000, "/" -> web:3000).
+# Hand-rolled Traefik labels were removed here because they raced Dokploy's own
+# Traefik-label injection on these containers and Let's Encrypt never issued a real
+# cert for portfolio.udayps.com — Dokploy's managed domain path is what actually
+# gets certs issued reliably on this setup.
 #
 # Because the API is same-origin, the frontend just uses relative "/api" and "/ws"
 # (see web/src/lib/api.ts). No CORS, and NO build-time NEXT_PUBLIC_API_URL needed —
 # leave it unset so API_BASE = "" (same origin).
-#
-# NOTE: routing is defined by the Traefik labels below. In Dokploy do NOT also add
-# UI domains for these services (that would create competing routers). Just make sure
-# the app is attached to the dokploy-network (it is, below). Adjust the host rule and
-# certresolver name ("letsencrypt") to match your Dokploy Traefik setup.
 
 services:
   web:
@@ -37,20 +34,6 @@ services:
       - "3000"
     depends_on:
       - api
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=dokploy-network"
-      # catch-all for the domain → Next.js (lower priority than the /api + /ws router)
-      - "traefik.http.routers.uday-web.rule=Host(`portfolio.udayps.com`) || Host(`me.udayps.com`)"
-      - "traefik.http.routers.uday-web.entrypoints=websecure"
-      - "traefik.http.routers.uday-web.tls=true"
-      - "traefik.http.routers.uday-web.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.uday-web.priority=1"
-      # Pin router→service explicitly. Dokploy also injects its own service labels on
-      # this container; with >1 service present Traefik drops any router that doesn't
-      # name its service. Without this line, this router silently never registers.
-      - "traefik.http.routers.uday-web.service=uday-web"
-      - "traefik.http.services.uday-web.loadbalancer.server.port=3000"
 
   api:
     build: ./api
@@ -67,19 +50,6 @@ services:
       - portfolio-data:/app/data
     expose:
       - "4000"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=dokploy-network"
-      # /api and /ws on the same domain → backend. Higher priority so it wins over web.
-      - "traefik.http.routers.uday-api.rule=(Host(`portfolio.udayps.com`) || Host(`me.udayps.com`)) && (PathPrefix(`/api`) || PathPrefix(`/ws`))"
-      - "traefik.http.routers.uday-api.entrypoints=websecure"
-      - "traefik.http.routers.uday-api.tls=true"
-      - "traefik.http.routers.uday-api.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.uday-api.priority=100"
-      # Pin router→service explicitly (see note on uday-web). This is what makes the
-      # /api + /ws router actually register and win over the web catch-all.
-      - "traefik.http.routers.uday-api.service=uday-api"
-      - "traefik.http.services.uday-api.loadbalancer.server.port=4000"
 
 volumes:
   portfolio-data:

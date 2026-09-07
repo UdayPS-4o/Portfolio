@@ -8,7 +8,6 @@ api/data/*.db-shm
 api/data/*.db-wal
 
 # env
-**/.env
 **/.env.local
 **/.env*.local
 
@@ -31,3 +30,4 @@ id_ed25519*
 *accessKeys*.csv
 aws_*.csv
 **/credentials
+config.bat
